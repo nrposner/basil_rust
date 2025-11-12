@@ -9,9 +9,6 @@ fn beta_arr<'py>(
     py: Python<'py>,
     obj1: PyReadonlyArray1<'py, f64>,
     obj2: PyReadonlyArray1<'py, f64>,
-//     obj1: Vec<f64>, 
-//     obj2: Vec<f64>
-// ) -> Vec<f64> {
 ) -> Bound<'py, PyArray1<f64>> {
 
     assert!(!obj1.is_empty().unwrap());
@@ -45,16 +42,6 @@ fn peters_ecc_const_sgl(ecc: f64) -> f64 {
         ecc.powf(12.0/19.0) * (1.0 + (121.0 / 304.0) * ecc.powi(2)).powf(870.0/2299.0)
     )
 }
-
-// #[pyfunction]
-// fn peters_ecc_const_arr(eccs: Vec<f64>) -> Vec<f64> {
-//     assert!(!eccs.is_empty());
-//
-//     eccs.iter().map(|ecc| {
-//         (1.0 - ecc.powi(2)) / ( ecc.powf(12.0/19.0) * (1.0 + (121.0 / 304.0) * ecc.powi(2)).powf(870.0/2299.0))
-//         // (1.0 - ecc.powi(2)) / (ecc.powf(12.0/19.0)) * (1.0 + (121.0 / 304.0) * ecc.powi(2)).powf(870.0/2299.0)
-//     }).collect()
-// }
 
 #[pyfunction]
 fn peters_ecc_const_arr<'py>(
@@ -145,23 +132,6 @@ fn orb_sep_evol_circ_sgl(m1: f64, m2: f64, a0: f64, t: f64) -> f64 {
     (a0.powi(2).powi(2) - (4.0 * beta * t)).sqrt().sqrt()
 }
 
-// #[pyfunction]
-// fn orb_sep_evol_ecc_integrand_arr(
-//     preamble: f64, 
-//     c0: f64,
-//     ecc_arr: Vec<f64>, 
-// ) -> Vec<f64> {
-//     assert!(!ecc_arr.is_empty());
-//
-//     // because we wrote the peters_ecc_const_sgl function in pure rust, we can call it from
-//     // Rust with none of the Python call overhead: they're different functions at build time
-//     ecc_arr.iter().map(|ecc| {
-//         let sep = c0 / peters_ecc_const_sgl(*ecc);
-//         preamble * (ecc/sep.powi(4)) * (1.0 + (121.0/304.0) * ecc.powi(2)) / (1.0 - (ecc).powi(2)).powf(2.5)
-//     }).collect()
-// }
-
-
 #[pyfunction]
 fn orb_sep_evol_ecc_integrand_arr<'py>(
     py: Python<'py>,
@@ -198,7 +168,6 @@ fn orb_sep_evol_ecc_integrand_sgl(
     preamble * (ecc/sep.powi(4)) * (1.0 + (121.0/304.0) * ecc.powi(2)) / (1.0 - (ecc).powi(2)).powf(2.5)
 }
 
-/// A Python module implemented in Rust.
 #[pymodule]
 fn basil(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(beta_arr, m)?)?;
